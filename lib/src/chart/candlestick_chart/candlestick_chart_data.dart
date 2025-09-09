@@ -630,6 +630,16 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
     fontWeight: FontWeight.bold,
     fontSize: 14,
   );
+
+  // <-- NEW: Number formatter that keeps small decimals
+  String formatNum(double val) {
+    if (val < 1) {
+      return val.toStringAsFixed(6); // keep up to 6 significant digits
+    } else {
+      return val.toStringAsFixed(2); // 2 decimals for numbers >= 1
+    }
+  }
+
   return CandlestickTooltipItem(
     '',
     textStyle: textStyle,
@@ -639,7 +649,7 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
         style: textStyle,
       ),
       TextSpan(
-        text: '${touchedSpot.open.toInt()}\n',
+        text: '${formatNum(touchedSpot.open)}\n',
         style: valueStyle,
       ),
       TextSpan(
@@ -647,7 +657,7 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
         style: textStyle,
       ),
       TextSpan(
-        text: '${touchedSpot.high.toInt()}\n',
+        text: '${formatNum(touchedSpot.high)}\n',
         style: valueStyle,
       ),
       TextSpan(
@@ -655,7 +665,7 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
         style: textStyle,
       ),
       TextSpan(
-        text: '${touchedSpot.low.toInt()}\n',
+        text: '${formatNum(touchedSpot.low)}\n',
         style: valueStyle,
       ),
       TextSpan(
@@ -663,7 +673,7 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
         style: textStyle,
       ),
       TextSpan(
-        text: '${touchedSpot.close.toInt()}',
+        text: formatNum(touchedSpot.close),
         style: valueStyle,
       ),
     ],
