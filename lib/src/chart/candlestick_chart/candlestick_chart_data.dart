@@ -609,6 +609,24 @@ typedef GetCandlestickTooltipItems = CandlestickTooltipItem? Function(
   int spotIndex,
 );
 
+// Formats to 2 decimals if everything beyond 2 decimals is zero,
+// otherwise formats to 8 decimals.
+String formatPrice(num value) {
+  final v = value.toDouble();
+  if (v.isNaN || v.isInfinite) return v.toString();
+
+  // Get an 8-decimal representation first
+  final s8 = v.toStringAsFixed(8);
+  final dot = s8.indexOf('.');
+  if (dot == -1) return '$s8.00'; // integer case
+
+  final frac = s8.substring(dot + 1); // fractional part (8 chars)
+  final hasNonZeroBeyond2 =
+      frac.length > 2 && frac.substring(2).contains(RegExp(r'[1-9]'));
+
+  return hasNonZeroBeyond2 ? s8 : v.toStringAsFixed(2);
+}
+
 /// Default implementation for [CandlestickTouchTooltipData.getTooltipItems].
 CandlestickTooltipItem? defaultCandlestickTooltipItem(
   FlCandlestickPainter painter,
@@ -638,34 +656,22 @@ CandlestickTooltipItem? defaultCandlestickTooltipItem(
         text: 'open: ',
         style: textStyle,
       ),
-      TextSpan(
-        text: '${touchedSpot.open.toInt()}\n',
-        style: valueStyle,
-      ),
+      TextSpan(text: '${formatPrice(touchedSpot.open)}\n', style: valueStyle),
       TextSpan(
         text: 'high: ',
         style: textStyle,
       ),
-      TextSpan(
-        text: '${touchedSpot.high.toInt()}\n',
-        style: valueStyle,
-      ),
+      TextSpan(text: '${formatPrice(touchedSpot.high)}\n', style: valueStyle),
       TextSpan(
         text: 'low: ',
         style: textStyle,
       ),
-      TextSpan(
-        text: '${touchedSpot.low.toInt()}\n',
-        style: valueStyle,
-      ),
+      TextSpan(text: '${formatPrice(touchedSpot.low)}\n', style: valueStyle),
       TextSpan(
         text: 'close: ',
         style: textStyle,
       ),
-      TextSpan(
-        text: '${touchedSpot.close.toInt()}',
-        style: valueStyle,
-      ),
+      TextSpan(text: formatPrice(touchedSpot.close), style: valueStyle),
     ],
   );
 }
